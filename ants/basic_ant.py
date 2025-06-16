@@ -5,7 +5,7 @@ from utils.helpers import get_neighbors
 class Ant:
     def __init__(self, grid):
         # Start all ants at the nest
-        self.x, self.y = random.choice(list(grid.nest_area))
+        self.x, self.y = NEST_POSITION
         self.grid = grid
         self.food_tick_counter = 10
         self.state = "FORAGING"   

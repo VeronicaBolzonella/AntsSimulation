@@ -21,26 +21,16 @@ INITIAL_PHEROMONE = 0.0
 PHEROMONE_DECAY = 0.01     # evaporation rate per update
 PHEROMONE_DIFFUSION = 0.1  # how fast pheromones spread
 
-# --- Food & Nest Settings ---
-NUM_FOOD_LOCATIONS = 500
-FOOD_AMOUNT = 1000
+# --- Nest Settings ---
 NEST_POSITION = (50, 50)
-NEST_SIZE = 11 # must be odd
 
-# Avoid placing food directly on the nest
-def generate_food_locations(n=NUM_FOOD_LOCATIONS, min_distance_from_nest=2):
-    locations = set()
-    while len(locations) < n:
-        x = random.randint(0, GRID_WIDTH - 1)
-        y = random.randint(0, GRID_HEIGHT - 1)
-        if abs(x - NEST_POSITION[0]) >= min_distance_from_nest and abs(y - NEST_POSITION[1]) >= min_distance_from_nest:
-            locations.add((x, y))
-    return list(locations)
-
-FOOD_LOCATIONS = generate_food_locations()
-
-INITIAL_FOOD_STORAGE = 100
-
+# --- Food Settings ---
+NUMBER_FOOD_CLUSTERS = 4
+FOOD_LOCATIONS = FOOD_LOCATIONS = [  # (x, y, amount)
+    (120, 80, 5),
+    (60, 150, 4),
+    (160, 40, 6),
+]
 
 # --- Colors (RGB) ---
 COLOR_BG = (0, 0, 0)

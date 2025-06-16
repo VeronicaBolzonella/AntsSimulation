@@ -9,31 +9,25 @@ def main():
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
-    grid = Grid(GRID_WIDTH, GRID_HEIGHT)
-    ants = [Ant(grid) for _ in range(NUM_ANTS)]
-    renderer = Renderer(screen, grid, ants)
+    # Initialize world grid with shared food dictionary
+    grid = Grid(GRID_WIDTH, GRID_HEIGHT, FOOD_LOCATIONS)
+
+    
+    # Set up renderer
+    renderer = Renderer(screen, grid)
 
     running = True
     while running:
+        # Event handling (including click-to-place-food)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        # Update world
-        for ant in ants:
-            ant.update()
-
-        # Remove dead ants
-        ants = [ant for ant in ants if ant.alive]
-
-        grid.evaporate_pheromones()
-        
-        # Draw
+        # Draw world
         renderer.increment_iteration()
         renderer.draw()
         pygame.display.flip()
         clock.tick(FPS)
-        
 
     pygame.quit()
 
