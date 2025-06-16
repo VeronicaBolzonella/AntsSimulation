@@ -2,15 +2,15 @@ import pygame
 from settings import (
     GRID_WIDTH, GRID_HEIGHT, CELL_SIZE,
     COLOR_BG, COLOR_GRID, COLOR_BASIC_ANT,
-    COLOR_FOOD, COLOR_NEST, COLOR_PHEROMONE, FOOD_LOCATIONS
+    COLOR_FOOD, COLOR_NEST, COLOR_TRAJECTORY_PHEROMONE, FOOD_LOCATIONS, PHERORMONE_RADIUS
 )
+from world.food import Food
 
 class Renderer:
-    def __init__(self, screen, grid, ants=None, food=None):
+    def __init__(self, screen, grid, ants, food=None):
         self.screen = screen
         self.grid = grid
-        self.ants = ants
-        self.food = food
+        self.ants = ants if not None else []
         self.font = pygame.font.SysFont('Arial', 16)
         self.iteration = 0
 
@@ -31,11 +31,18 @@ class Renderer:
         # Draw food clusters
         self.draw_food()
 
+        # Draw pherormones
+        self.draw_pherormones()
+
+        # Draw ants
+        self.draw_ants()
+
+
         # Draw legend
         self.draw_legend()
 
     def draw_legend(self):
-        legend_text = f"N: {len(self.ants)}    T: {self.iteration}    F: {self.grid.nest_food_storage}"
+        legend_text = f"T: {self.iteration} "
         text_surface = self.font.render(legend_text, True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 10))  # top-left corner
 
@@ -43,7 +50,7 @@ class Renderer:
         self.iteration += 1
         
     def draw_food(self):
-        for food in self.food:
+        for food in self.grid.food:
             # Intensity of color based on amount (cap at 255)
             intensity = max(50, min(255, int((food.amount / 100) * 255)))
             color = (255, intensity, 0)  # fades from bright orange to dark
@@ -61,3 +68,16 @@ class Renderer:
             ant_y = ay * CELL_SIZE
             pygame.draw.rect(self.screen, COLOR_BASIC_ANT, (ant_x, ant_y, CELL_SIZE, CELL_SIZE))
 
+    def draw_pherormones(self):
+        for x in range(self.grid.width):
+            for y in range(self.grid.height):
+                strength = self.grid.pheromone[x, y]
+
+                if strength > 0.01:
+                    # Scale intensity to 0–255 (you can adjust this based on max value)
+                    intensity = min(255, int(strength * 255))
+                    color = COLOR_TRAJECTORY_PHEROMONE  # blue channel for pheromone
+
+                    screen_x = x * CELL_SIZE
+                    screen_y = y * CELL_SIZE
+                    pygame.draw.rect(self.screen, color, (screen_x, screen_y, PHERORMONE_RADIUS, PHERORMONE_RADIUS))
