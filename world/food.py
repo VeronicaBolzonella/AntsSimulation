@@ -1,5 +1,5 @@
 class Food:
-    def __init__(self, x, y, amount = 10, size=3):
+    def __init__(self, x, y, amount = 80, size=3):
         self.x = x
         self.y = y
         self.amount = amount  # total food units

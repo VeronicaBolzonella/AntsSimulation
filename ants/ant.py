@@ -14,9 +14,29 @@ class Ant:
 
     def update(self):
         # change dir with turn probability
-        if random.random()<self.turn_probability:
-            angle_change = random.uniform(-math.pi / 4, math.pi / 4)  # small random turn
-            self.phi += angle_change
+        if self.has_food:
+            # Compute angle to nest
+            nest_x, nest_y = NEST_POSITION
+            dx = nest_x - self.x
+            dy = nest_y - self.y
+
+            angle = math.atan2(dy, dx)
+
+            # Rotate self.phi a little toward desired_angle
+            angle_diff = (angle - self.phi + math.pi) % (2 * math.pi) - math.pi  # shortest rotation
+            self.phi += 0.2 * angle_diff 
+
+            if (self.x, self.y) == NEST_POSITION:
+                self.has_food = False
+        else: 
+            if random.random()<self.turn_probability:
+                angle_change = random.uniform(-math.pi / 4, math.pi / 4)  # small random turn
+                self.phi += angle_change
+
+            food = self.grid.get_food_at(self.x, self.y)
+            if food:
+                food.take(1)
+                self.has_food = True
 
         # Calculate next step
         dx = round(math.cos(self.phi))
@@ -31,11 +51,13 @@ class Ant:
             self.y = new_y
             self.drop_pherormone()
 
+
     def get_position(self):
         return self.x, self.y
     
     def drop_pherormone(self):
-        self.grid.pheromone[self.x, self.y] += 10
+        if self.has_food:
+            self.grid.pheromone_home[self.x, self.y] += 10
+        else:
+            self.grid.pheromone_food[self.x, self.y] += 10
 
-    def take_food(self):
-        pass
