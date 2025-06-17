@@ -1,9 +1,9 @@
 import random 
 
 # --- Window and Grid Settings ---
-GRID_WIDTH = 200           # number of cells horizontally
-GRID_HEIGHT = 200          # number of cells vertically
-CELL_SIZE = 8              # pixel size of each grid cell
+GRID_WIDTH = 400           # number of cells horizontally
+GRID_HEIGHT = 400          # number of cells vertically
+CELL_SIZE = 6              # pixel size of each grid cell
 
 WINDOW_WIDTH = GRID_WIDTH * CELL_SIZE
 WINDOW_HEIGHT = GRID_HEIGHT * CELL_SIZE
@@ -11,18 +11,18 @@ WINDOW_HEIGHT = GRID_HEIGHT * CELL_SIZE
 FPS = 20                   # Frames per second for the GUI
 
 # --- Ant Settings ---
-NUM_ANTS = 1000
+NUM_ANTS = 10
 PHEROMONE_DROP_AMOUNT = 5
-ANT_VIEW_RADIUS = 1        # How far ants can sense
+ANT_VIEW_RADIUS = 10        # How far ants can sense
 ANT_SPEED = 1
 
 # --- Pheromone Settings ---
 INITIAL_PHEROMONE = 0.0
-PHEROMONE_DECAY_FOOD = 0.02   # evaporation rate per update
+PHEROMONE_DECAY_FOOD = 0.04   # evaporation rate per update
 PHEROMONE_DECAY_HOME = 0.01   # evaporation rate per update
 
 PHEROMONE_DIFFUSION = 0.1  # how fast pheromones spread
-PHERORMONE_RADIUS = 4
+PHERORMONE_RADIUS = 3
 
 # --- Nest Settings ---
 NEST_POSITION = (50, 50)

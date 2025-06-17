@@ -33,13 +33,10 @@ def main():
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     grid_x = mouse_x // CELL_SIZE
                     grid_y = mouse_y // CELL_SIZE
-                    print(f"Click at pixel ({mouse_x}, {mouse_y}) => grid ({grid_x}, {grid_y})")
 
                     new_food = Food(grid_x, grid_y)
-                    print(f"Created new food at {grid_x}, {grid_y} with amount {new_food.amount}")
 
                     grid.food.append(new_food)
-                    print(f"Total food clusters: {len(grid.food)}")
 
         for ant in ants:
             ant.update()

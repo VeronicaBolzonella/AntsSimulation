@@ -1,11 +1,13 @@
 import numpy as np
+import math
 from settings import (
     INITIAL_PHEROMONE,
     PHEROMONE_DECAY_FOOD, PHEROMONE_DECAY_HOME,
     GRID_WIDTH,
     GRID_HEIGHT,
     NEST_POSITION,
-    FOOD_LOCATIONS
+    FOOD_LOCATIONS,
+    PHEROMONE_DIFFUSION
 )
 
 class Grid:
@@ -28,3 +30,37 @@ class Grid:
             if (x, y) in food.get_cells() and not food.is_depleted():
                 return food
         return None
+    
+    def get_strongest_direction(self, x, y, has_food):
+        # Choose the right pheromone map
+        pheromone_map = self.pheromone_home if has_food else self.pheromone_food
+
+        # Define relative neighbor positions
+        directions = [(-1, -1), (0, -1), (1, -1),
+                      (-1,  0),         (1,  0),
+                      (-1,  1), (0,  1), (1,  1)]
+
+        strongest_val = -1
+        strongest_dir = (0, 0)
+
+        for dx, dy in directions:
+            nx = x + dx
+            ny = y + dy
+            if 0 <= nx < GRID_WIDTH and 0 <= ny < GRID_HEIGHT:
+                val = pheromone_map[nx, ny]
+                if val > strongest_val:
+                    strongest_val = val
+                    strongest_dir = (dx, dy)
+
+        return strongest_dir
+    
+    def get_home_direction(self, x, y):
+        nx, ny = NEST_POSITION
+        dx = nx - x
+        dy = ny - y
+        dist = math.hypot(dx, dy)
+        if dist == 0:
+            return (0, 0)
+        return (dx / dist, dy / dist)
+    
+    
