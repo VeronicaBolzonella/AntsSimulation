@@ -1,66 +1,53 @@
-import numpy as np
-import math
-from settings import (
-    INITIAL_PHEROMONE,
-    PHEROMONE_DECAY_FOOD, PHEROMONE_DECAY_HOME,
-    GRID_WIDTH,
-    GRID_HEIGHT,
-    NEST_POSITION,
-    FOOD_LOCATIONS,
-    PHEROMONE_DIFFUSION
-)
-
 class Grid:
-    def __init__(self, width, height, food):
-        self.width = width
-        self.height = height
-        self.food = food if food is not None else []
-        self.pheromone_food = np.zeros((width, height), dtype=float)
-        self.pheromone_home = np.zeros((width, height), dtype=float)
+    def __init__(self, width, height):
+        self.mapW = width
+        self.mapH = height
+        self.length = self.mapW * self.mapH
+        self.map_vals = [0.0 for _ in range(self.length)]
 
-    def is_nest(self, x, y):
-        return (x, y) == NEST_POSITION
-    
-    def update_pheromones(self):
-        self.pheromone_food *= (1 - PHEROMONE_DECAY_FOOD)  # decay of exploring pherormone
-        self.pheromone_home *= (1 - PHEROMONE_DECAY_HOME)  # decay of retunring pherormone
+        self.MAX_VAL = 100.0
+        self.EVAPORATION_RATE = 0.999
 
-    def get_food_at(self, x, y):
-        for food in self.food:
-            if (x, y) in food.get_cells() and not food.is_depleted():
-                return food
-        return None
-    
-    def get_strongest_direction(self, x, y, has_food):
-        # Choose the right pheromone map
-        pheromone_map = self.pheromone_home if has_food else self.pheromone_food
+    def step(self):
+        # Evaporate pheromones over time
+        self.map_vals = [val * self.EVAPORATION_RATE for val in self.map_vals]
 
-        # Define relative neighbor positions
-        directions = [(-1, -1), (0, -1), (1, -1),
-                      (-1,  0),         (1,  0),
-                      (-1,  1), (0,  1), (1,  1)]
+    def set_value(self, x, y, val):
+        try:
+            index = y * self.mapW + x
+            old_val = self.map_vals[index]
+            if val > old_val:
+                self.map_vals[index] = val
+        except IndexError:
+            # Silently ignore out-of-bounds
+            pass
 
-        strongest_val = -1
-        strongest_dir = (0, 0)
+    def get_percentage(self, index):
+        return self.map_vals[index] / self.MAX_VAL
+
+    def get_value_by_index(self, index):
+        return self.map_vals[index]
+
+    def get_value(self, x, y):
+        try:
+            return self.map_vals[y * self.mapW + x]
+        except IndexError:
+            return -1.0
+
+    def get_strongest(self, x, y):
+        directions = [
+            (-1, -1), (0, -1), (1, -1),  # Top-left, top, top-right
+            (-1,  0),         (1,  0),  # Left,       , right
+            (-1,  1), (0,  1), (1,  1)   # Bottom-left, bottom, bottom-right
+        ]
+
+        strongest = [0, 0]
+        strongest_val = -1.0
 
         for dx, dy in directions:
-            nx = x + dx
-            ny = y + dy
-            if 0 <= nx < GRID_WIDTH and 0 <= ny < GRID_HEIGHT:
-                val = pheromone_map[nx, ny]
-                if val > strongest_val:
-                    strongest_val = val
-                    strongest_dir = (dx, dy)
+            val = self.get_value(x + dx, y + dy)
+            if val > strongest_val:
+                strongest = [dx, dy]
+                strongest_val = val
 
-        return strongest_dir
-    
-    def get_home_direction(self, x, y):
-        nx, ny = NEST_POSITION
-        dx = nx - x
-        dy = ny - y
-        dist = math.hypot(dx, dy)
-        if dist == 0:
-            return (0, 0)
-        return (dx / dist, dy / dist)
-    
-    
+        return strongest
